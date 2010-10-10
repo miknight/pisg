@@ -1800,6 +1800,19 @@ sub _mostusedword
             _html("</tr>");
             $count++;
         }
+        # Display any whitelisted words here if they did not appear above.
+        for(my $i = $self->{cfg}->{wordhistory} + 1; $i < $#popular; $i++) {
+            if (grep { $_ eq $popular[$i] } whitelisted_words()) {
+                my $word = $self->_format_word($self->{stats}->{word_upcase}{$popular[$i]});
+                my $wordcount = $self->{stats}->{wordcounts}{$popular[$i]};
+                my $lastusedby = $self->_format_word($self->{stats}->{wordnicks}{$popular[$i]});
+                _html("<tr><td class=\"tdtop\">$i</td>");
+                _html("<td class=\"tdtop\">$word</td>");
+                _html("<td class=\"tdtop\">$wordcount</td>");
+                _html("<td class=\"tdtop\">$lastusedby</td>");
+                _html("</tr>");
+            }
+        }
 
         _html("</table>");
     }

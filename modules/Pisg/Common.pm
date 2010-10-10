@@ -27,7 +27,7 @@ Pisg::Common - some common functions of pisg.
 
 use Exporter;
 @ISA = ('Exporter');
-@EXPORT = qw(add_alias add_aliaswild add_ignore add_url_ignore is_ignored url_is_ignored find_alias store_aliases restore_aliases match_urls match_email htmlentities urlencode is_nick randomglob wordlist_regexp);
+@EXPORT = qw(add_alias add_aliaswild add_ignore add_url_ignore is_ignored url_is_ignored find_alias store_aliases restore_aliases match_urls match_email htmlentities urlencode is_nick randomglob whitelisted_words wordlist_regexp);
 
 use strict;
 $^W = 1;
@@ -99,12 +99,23 @@ sub add_url_ignore
     $ignored_urls{$url} = 1;
 }
 
+# Words that will be counted regardless of whether a nickname.
+# TODO: Make this a setting in the config file.
+sub whitelisted_words
+{
+    return qw(heredue)
+}
+
 # Sub to do a -cheap- check on wether or not a word is a nick
 # This will only match if it has seen it used as a nick
 sub is_nick
 {
     my ($nick, $wilds) = @_;
     my $lcnick = lc($nick);
+
+    if (grep { $_ eq $nick} whitelisted_words()) {
+        return 0;
+    }
 
     if ($aliases{$lcnick}) {
         return $aliases{$lcnick};
